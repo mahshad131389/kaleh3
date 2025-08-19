@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MindAR - سوئیچ دوربین پشتی به جلویی</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.5/dist/mindar-image-aframe.prod.js"></script>
+</head>
+<body>
+    <a-scene mindar-image="imageTargetSrc: https://hiukim.github.io/mind-ar-js-doc/examples/asset-card-example/card.mind; autoStart: true;" color-space="sRGB" vr-mode-ui="enabled: false">
+        <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+        <a-entity mindar-image-target="targetIndex: 0">
+            <a-plane color="red" opacity="0.5" position="0 0 0" height="0.5" width="0.5"></a-plane>
+        </a-entity>
+    </a-scene>
+
+    <script>
+        const scene = document.querySelector("a-scene");
+        let isBackCamera = true;
+
+        // رویداد تشخیص هدف
+        scene.addEventListener("targetFound", async () => {
+            console.log("هدف با دوربین پشتی تشخیص داده شد!");
+            if (isBackCamera) {
+                await switchToFrontCamera();
+            }
+        });
+
+        // سوئیچ به دوربین جلویی
+        async function switchToFrontCamera() {
+            const arSystem = scene.systems["mindar-image-system"];
+            try {
+                await arSystem.stop(); // توقف دوربین پشتی
+                await arSystem.start({ facingMode: "user" }); // شروع دوربین جلویی
+                isBackCamera = false;
+                console.log("سوئیچ به دوربین جلویی موفق!");
+            } catch (error) {
+                console.error("خطا در سوئیچ دوربین:", error);
+            }
+        }
+    </script>
+</body>
+</html>
